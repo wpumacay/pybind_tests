@@ -1,3 +1,6 @@
 [submodule "pybind11"]
 	path = pybind11
 	url = https://github.com/pybind/pybind11
+[submodule "ext/glfw"]
+	path = ext/glfw
+	url = https://github.com/glfw/glfw.git
