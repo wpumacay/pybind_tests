@@ -9,7 +9,7 @@ void createWindow()
 {
     module2::Window* _window = new module2::Window();
     _window->clear();
-    delete _window;
+    // delete _window;
 }
 
 float test( float x )
