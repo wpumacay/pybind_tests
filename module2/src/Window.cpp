@@ -7,15 +7,18 @@ namespace module2
 
     Window* Window::INSTANCE = NULL;
 
-    Window::Window()
+    Window* Window::getInstance()
     {
-        if ( Window::INSTANCE != NULL )
+        if ( Window::INSTANCE == NULL )
         {
-            delete Window::INSTANCE;
+            Window::INSTANCE = new Window();
         }
 
-        Window::INSTANCE = this;
+        return Window::INSTANCE;
+    }
 
+    Window::Window()
+    {
         glfwInit();
         glfwWindowHint( GLFW_CONTEXT_VERSION_MAJOR, 3 );
         glfwWindowHint( GLFW_CONTEXT_VERSION_MINOR, 3 );
@@ -42,6 +45,9 @@ namespace module2
             return;
         }
 
+        glfwSetKeyCallback( m_glfwWindowHandle, Window::onKeyCallback );
+        glfwSetMouseButtonCallback( m_glfwWindowHandle, Window::onMouseCallback );
+
         glfwGetFramebufferSize( m_glfwWindowHandle, &m_width, &m_height );
         glViewport( 0, 0, m_width, m_height );
 
@@ -59,9 +65,24 @@ namespace module2
         glfwTerminate();
     }
 
-    void Window::clear()
+    void Window::render()
     {
-        std::cout << "foo: clear window" << std::endl;
+        
+    }
+
+    void Window::onKeyCallback( GLFWwindow* pWindow, int key,
+                                int scancode, int action, int mode )
+    {
+        std::cout << "LOG: key pressed " << key << std::endl;
+    }
+
+    void Window::onMouseCallback( GLFWwindow* pWindow, int button,
+                                  int action, int mode )
+    {
+        double _x, _y;
+        glfwGetCursorPos( pWindow, &_x, &_y );
+
+        std::cout << "LOG: mouse pressed at ( " << _x << ", " << _y << " )" << std::endl;
     }
 
 }

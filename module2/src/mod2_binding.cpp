@@ -7,24 +7,31 @@ namespace py = pybind11;
 
 void createWindow()
 {
-    module2::Window* _window = new module2::Window();
-    _window->clear();
-    // delete _window;
+    auto _window = module2::Window::getInstance();
 }
 
 float test( float x )
 {
-    module2::Window* _window = new module2::Window();
-    _window->clear();
-    delete _window;
+    std::cout << "jojojojojo" << std::endl;
+}
 
-    return x * x;
+void render()
+{
+    auto _window = module2::Window::getInstance();
+
+    _window->clear();
+    _window->pollEvents();
+
+    _window->render();
+
+    _window->swapBuffers();
 }
 
 PYBIND11_MODULE(module2, m)
 {
     m.def( "createWindow", &createWindow );
     m.def( "test", &test );
+    m.def( "render", &render );
 
     m.attr( "__version__" ) = "dev";
 }
