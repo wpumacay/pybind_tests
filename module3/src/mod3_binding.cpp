@@ -2,6 +2,7 @@
 #include <pybind11/pybind11.h>
 
 #include <LApp.h>
+#include <LMeshBuilder.h>
 
 namespace py = pybind11;
 
@@ -20,6 +21,7 @@ class MeshWrapper
 
     ~MeshWrapper()
     {
+        std::cout << "LOG> Deleting meshwrapper object" << std::endl;
         // TODO: Should set to awaiting delete ...
         // or something similar in order to be handled ...
         // by the engine itself. Right now it's leaky
@@ -44,6 +46,18 @@ class MeshWrapper
 void init()
 {
     auto _app = engine::LApp::GetInstance();
+    auto _scene = _app->scene();
+
+    // make a sample camera
+    auto _camera = new engine::LFpsCamera( engine::LVec3( 1.0f, 2.0f, -1.0f ),
+                                           engine::LVec3( 0.0f, 1.0f, 0.0f ) );
+    // make a sample light source
+    auto _light = new engine::LLightDirectional( engine::LVec3( 0.2, 0.2, 0.2 ), engine::LVec3( 0.8, 0.8, 0.8 ),
+                                                 engine::LVec3( 0.05, 0.05, 0.05 ), 0, engine::LVec3( -1, -1, 0 ) );
+
+    // add these components to the scene
+    _scene->addCamera( _camera );
+    _scene->addLight( _light );
 }
 
 
@@ -53,11 +67,16 @@ void update()
     _app->update();
 }
 
+bool isActive()
+{
+    auto _app = engine::LApp::GetInstance();
+    return _app->isActive();
+}
 
 MeshWrapper* addMesh()
 {
     auto _app = engine::LApp::GetInstance();
-    auto _scene = _app->getCurrentScene();
+    auto _scene = _app->scene();
 
     auto _mesh = engine::LMeshBuilder::createBox( 0.5f, 0.5f, 0.5f );
     _scene->addRenderable( _mesh );
@@ -77,8 +96,9 @@ PYBIND11_MODULE( module3, m )
         .def( "getX", &MeshWrapper::getX );
 
     m.def( "init", &init );
-    m.def( "render", &render );
-    m.def( "addMesh", &addMesh, return_value_policy::automatic );
+    m.def( "update", &update );
+    m.def( "isActive", &isActive );
+    m.def( "addMesh", &addMesh, py::return_value_policy::automatic );
 
     m.attr( "__version__" ) = "dev";
 }
