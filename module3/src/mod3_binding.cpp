@@ -1,5 +1,8 @@
 
 #include <pybind11/pybind11.h>
+#include <pybind11/numpy.h>
+
+#include <cstdlib>
 
 #include <LApp.h>
 #include <LMeshBuilder.h>
@@ -87,6 +90,47 @@ MeshWrapper* addMesh()
     return _meshWrapper;
 }
 
+void testNumpyArray1( py::array_t<float> pArray )
+{
+    py::buffer_info _buff = pArray.request();
+    std::cout << "ndim: " << _buff.ndim << std::endl;
+    std::cout << "size: " << _buff.size << std::endl;
+    std::cout << "shape: " << _buff.shape.size() << std::endl;
+
+    if ( _buff.ndim != 1 )
+    {
+        std::cout << "WARNING> should pass 1d array" << std::endl;
+        return;
+    }
+
+    std::cout << "data ************" << std::endl;
+    float* _ptr = ( float* ) _buff.ptr;
+    std::cout << "[ ";
+    for ( size_t i = 0; i < _buff.shape[0]; i++ )
+    {
+        std::cout << _ptr[i] << " ";
+    }
+    std::cout << "]" << std::endl;
+    std::cout << "****************" << std::endl;
+}
+
+#define TEST_SIZE 3
+
+py::array_t<float> testNumpyArray2()
+{
+    auto _result = py::array_t<float>( TEST_SIZE );
+    auto _buffer = _result.request();
+
+    auto _ptr = ( float* ) _buffer.ptr;
+
+    for ( size_t i = 0; i < _buffer.shape[0]; i++ )
+    {
+        _ptr[i] = ( ( (float) rand() ) / RAND_MAX );
+    }
+
+    return _result;
+}
+
 PYBIND11_MODULE( module3, m )
 {
     // mesh wrapper
@@ -99,6 +143,9 @@ PYBIND11_MODULE( module3, m )
     m.def( "update", &update );
     m.def( "isActive", &isActive );
     m.def( "addMesh", &addMesh, py::return_value_policy::automatic );
+
+    m.def( "testNumpyArray1", &testNumpyArray1 );
+    m.def( "testNumpyArray2", &testNumpyArray2 );
 
     m.attr( "__version__" ) = "dev";
 }
