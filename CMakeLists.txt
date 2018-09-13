@@ -10,6 +10,11 @@ set( EXT_INCLUDE_DIRECTORIES
      "${CMAKE_SOURCE_DIR}/ext/glm"
      "${CMAKE_SOURCE_DIR}/ext/cat1/include" )
 
+# Avoid building the examples in the libraries
+set( GLFW_BUILD_EXAMPLES OFF CACHE BOOL "Build the GLFW example programs" )
+set( GLFW_BUILD_TESTS OFF CACHE BOOL "Build the GLFW test programs" )
+set( GLM_TEST_ENABLE OFF CACHE BOOL "Build unit tests" )
+
 add_subdirectory( ext/glfw )
 add_subdirectory( ext/glad )
 add_subdirectory( ext/glm )
@@ -24,6 +29,7 @@ set( CAT1_ENGINE_RESOURCES_PATH
 add_subdirectory( ext/cat1 )
 
 # add modules with byndings
-add_subdirectory( module1 )
-add_subdirectory( module2 )
+# add_subdirectory( module1 )
+# add_subdirectory( module2 )
 add_subdirectory( module3 )
+# add_subdirectory( moduleEngineWrapper )
