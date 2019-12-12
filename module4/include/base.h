@@ -4,10 +4,15 @@
 #include <iostream>
 #include <string>
 
+#include <memory>
+#include <resources.h>
+
 namespace py = pybind11;
 
 namespace module4
 {
+
+    class Heart;
 
     class Animal
     {
@@ -26,12 +31,15 @@ namespace module4
 
         virtual std::string toString() const;
 
+        Heart* heart() const { return m_heart.get(); }
+
     protected :
 
         std::string m_name;
         size_t m_nlegs;
-
         float m_position;
+
+        std::unique_ptr< Heart> m_heart;
 
     };
 
@@ -42,4 +50,5 @@ namespace module4
         .def_property( "position", &module4::Animal::getPosition, &module4::Animal::setPosition ) \
         .def_property_readonly( "name", &module4::Animal::name ) \
         .def( "nlegs", &module4::Animal::nlegs ) \
-        .def( "toString", &module4::Animal::toString );
+        .def( "toString", &module4::Animal::toString )\
+        .def( "heart", &module4::Animal::heart, py::return_value_policy::reference );

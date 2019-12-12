@@ -9,11 +9,17 @@ namespace module4
     {
         m_position = 0.0f;
         m_nlegs = 0;
+
+        m_heart = std::unique_ptr< Heart >( new Heart( this, 100.0f ) );
     }
 
     Animal::~Animal()
     {
-        // nothing for now
+        std::cout << "Animal> destroying object (" << m_name << ")" << std::endl;
+
+        m_heart = nullptr;
+
+        std::cout << "Animal> finished destroying object (" << m_name << ")" << std::endl;
     }
 
     std::string Animal::toString() const

@@ -1,61 +1,104 @@
+
 import os
-import re
 import sys
-import platform
 import subprocess
 
-from setuptools import setup, Extension
-from setuptools.command.build_ext import build_ext
-from distutils.version import LooseVersion
+from setuptools import find_packages
+from setuptools import setup 
+from setuptools import Extension
 
+from setuptools.command.build_ext import build_ext as BaseBuildExtCommand
+
+
+def buildBindings( sourceDir, buildDir, cmakeArgs, buildArgs, env ):
+    if not os.path.exists( buildDir ) :
+        os.makedirs( buildDir )
+
+    subprocess.call( ['cmake', sourceDir] + cmakeArgs, cwd=buildDir, env=env )
+    subprocess.call( ['cmake', '--build', '.'] + buildArgs, cwd=buildDir )
 
 class CMakeExtension( Extension ) :
 
-    def __init__( self, name, sourcedir = '' ) :
-        super( CMakeExtension, self ).__init__( name, sources = [] )
-        self.sourcedir = os.path.abspath( sourcedir )
+    def __init__( self, name, sourceDir, sources=[] ) :
+        super( CMakeExtension, self ).__init__( name, sources=sources )
+        self.sourceDir = os.path.abspath( sourceDir )
 
-class CMakeBuild( build_ext ) :
+class BuildCommand( BaseBuildExtCommand ) :
 
     def run( self ) :
-        try :
-            _out = subprocess.check_output( [ 'cmake', '--version' ] )
+        try:
+            _ = subprocess.check_output( ['cmake', '--version'] )
         except OSError:
-            raise RuntimeError( 'CMake is not install, and it is used to build these extensions' )
+            raise RuntimeError( 'CMake must be installed to build the following extensions: ' +
+                                ', '.join( e.name for e in self.extensions ) )
 
-        for _ext in self.extensions :
-            self._buildExtension( _ext )
+        for _extension in self.extensions :
+            self.build_extension( _extension )
 
-    def _buildExtension( self, ext ) :
-        _extDir = os.path.abspath( os.path.dirname( self.get_ext_fullpath( ext.name ) ) )
-        print( 'extdir: ', _extDir )
-        print( 'extfullpath: ', self.get_ext_fullpath( ext.name ) )
-        _cmakeArgs = [ '-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=' + _extDir,
-                       '-DPYTHON_EXECUTABLE=' + sys.executable ]
+    def build_extension( self, extension ) :
+        _extensionFullPath = self.get_ext_fullpath( extension.name )
+        _extensionDirName = os.path.dirname( _extensionFullPath )
+        _extensionDirPath = os.path.abspath( _extensionDirName )
 
         _cfg = 'Debug' if self.debug else 'Release'
-        _buildArgs = [ '--config', _cfg ]
-
-        _cmakeArgs += [ '-DCMAKE_BUILD_TYPE=' + _cfg ]
+        _buildArgs = ['--config', _cfg, '--', '-j4']
+        _cmakeArgs = ['-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=' + _extensionDirPath,
+                      '-DPYTHON_EXECUTABLE=' + sys.executable,
+                      '-DCMAKE_BUILD_TYPE=' + _cfg]
 
         _env = os.environ.copy()
-        _env[ 'CXXFLAGS' ] = '{} -DVERSION_INFO\\"{}\\"'.format( _env.get( 'CXXFLAGS', '' ),
-                                                                 self.distribution.get_version() )
+        _env['CXXFLAGS'] = '{} -DVERSION_INFO=\\"{}\\"'.format( _env.get( 'CXXFLAGS', '' ),
+                                                                self.distribution.get_version() )
 
-        if not os.path.exists( self.build_temp ) :
-            os.makedirs( self.build_temp )
-        
-        subprocess.check_call( [ 'cmake', ext.sourcedir ] + _cmakeArgs, cwd = self.build_temp, env = _env )
-        subprocess.check_call( [ 'cmake', '--build', '.' ] + _buildArgs, cwd = self.build_temp )
+        _sourceDir = extension.sourceDir
+        _buildDir = self.build_temp
+
+        buildBindings( _sourceDir, _buildDir, _cmakeArgs, _buildArgs, _env )
+
+def grabAllContents( folderPath ) :
+    _elements = os.listdir( folderPath )
+    _files = []
+
+    for _element in _elements :
+        _elementPath = os.path.join( folderPath, _element )
+
+        if os.path.isdir( _elementPath ) :
+            if ( ( '_imgs' in _element ) or
+                 ( 'build' == _element ) or
+                 ( 'egg-info' in _element ) ) :
+                continue
+
+            _files.extend( grabAllContents( _elementPath ) )
+
+        elif ( ( '.cpp' in _element ) or ( '.cc' in _element ) or
+               ( '.h' in _element ) or ( '.hh' in _element ) or
+               ( '.png' in _element ) or ( '.jpg' in _element ) or 
+               ( '.glsl' in _element ) or ( '.cmake' in _element ) or
+               ( 'CMakeLists.txt' == _element ) ) :
+            _files.append( _elementPath )
+
+    return _files
 
 setup(
-    name = 'module3',
-    version = '0.0.1',
-    author = 'Wilbert Pumacay',
-    author_email = 'wpumacay@gmail.com',
-    description = 'A testing wrapper for an opengl rendering engine',
-    long_description = '',
-    ext_modules = [ CMakeExtension( 'module3' ) ],
-    cmdclass = dict( build_ext = CMakeBuild ),
-    zip_safe = False
+    name                    = 'pybind_tests',
+    version                 = '0.0.1',
+    description             = 'Sample modules that use pybind11',
+    author                  = 'Wilbert Santos Pumacay Huallpa',
+    license                 = 'MIT License',
+    author_email            = 'wpumacay@gmail.com',
+    url                     = 'https://github.com/wpumacay/pybind_tests',
+    keywords                = 'pybind11',
+    packages                = [],
+    zip_safe                = False,
+    install_requires        = [
+                                'setuptools'
+                              ],
+    package_dir             = {},
+    package_data            = {},
+    ext_modules             = [
+                                CMakeExtension( 'module4', '.' )
+                              ],
+    cmdclass                = {
+                                'build_ext': BuildCommand
+                              }
 )

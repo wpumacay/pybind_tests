@@ -14,7 +14,7 @@ namespace module4
 
     Duck::~Duck()
     {
-        // nothing extra to do here
+        std::cout << "Duck> destroying object" << std::endl;
     }
 
     std::string Duck::toString() const
@@ -36,7 +36,7 @@ namespace module4
 
     Dog::~Dog()
     {
-        // nothing extra to do here
+        std::cout << "Dog> destroying object" << std::endl;
     }
 
     std::string Dog::toString() const
