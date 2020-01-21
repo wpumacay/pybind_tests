@@ -8,6 +8,13 @@ namespace py = pybind11;
 namespace module3
 {
 
+    // just some test struct. We're trying to test const auto&, and auto& as returns of pybind11
+    struct ContainerData
+    {
+        std::string version;
+        size_t nElements;
+    };
+
     class Container
     {
 
@@ -22,10 +29,13 @@ namespace module3
         std::vector< ElementRaw* >& elementsRaw() { return m_elementsRaw; }
 
         std::string name() const { return m_name; }
+        ContainerData& data() { return m_data; }
+        const ContainerData& data() const { return m_data; }
 
     private :
 
         std::string m_name;
+        ContainerData m_data;
         std::vector< std::shared_ptr<Element> > m_elements;
         std::vector< ElementRaw* > m_elementsRaw;
     };
