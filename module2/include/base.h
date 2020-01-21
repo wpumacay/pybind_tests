@@ -9,7 +9,7 @@
 
 namespace py = pybind11;
 
-namespace module4
+namespace module2
 {
 
     class Heart;
@@ -45,10 +45,10 @@ namespace module4
 
 }
 
-#define MODULE4_BASE_BINDINGS(m) \
-    py::class_<module4::Animal>(m, "Animal") \
-        .def_property( "position", &module4::Animal::getPosition, &module4::Animal::setPosition ) \
-        .def_property_readonly( "name", &module4::Animal::name ) \
-        .def( "nlegs", &module4::Animal::nlegs ) \
-        .def( "toString", &module4::Animal::toString )\
-        .def( "heart", &module4::Animal::heart, py::return_value_policy::reference );
+#define MODULE2_BASE_BINDINGS(m) \
+    py::class_<module2::Animal>(m, "Animal") \
+        .def_property( "position", &module2::Animal::getPosition, &module2::Animal::setPosition ) \
+        .def_property_readonly( "name", &module2::Animal::name ) \
+        .def( "nlegs", &module2::Animal::nlegs ) \
+        .def( "toString", &module2::Animal::toString )\
+        .def( "heart", &module2::Animal::heart, py::return_value_policy::reference );

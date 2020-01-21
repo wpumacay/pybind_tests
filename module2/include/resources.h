@@ -4,7 +4,7 @@
 
 #include <base.h>
 
-namespace module4
+namespace module2
 {
 
     class Animal;
@@ -28,7 +28,7 @@ namespace module4
 
 }
 
-#define MODULE4_RESOURCES_BINDINGS(m) \
-    py::class_<module4::Heart>(m, "Heart") \
-        .def( "size", &module4::Heart::size ) \
-        .def( "owner", &module4::Heart::owner );
+#define MODULE2_RESOURCES_BINDINGS(m) \
+    py::class_<module2::Heart>(m, "Heart") \
+        .def( "size", &module2::Heart::size ) \
+        .def( "owner", &module2::Heart::owner );

@@ -1,7 +1,7 @@
 
 #include <resources.h>
 
-namespace module4
+namespace module2
 {
 
     Heart::Heart( Animal* owner, float size )

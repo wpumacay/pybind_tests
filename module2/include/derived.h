@@ -4,7 +4,7 @@
 
 namespace py = pybind11;
 
-namespace module4
+namespace module2
 {
 
     class Duck : public Animal
@@ -53,12 +53,12 @@ namespace module4
 
 }
 
-#define MODULE4_DERIVED_BINDINGS(m) \
-    py::class_<module4::Duck, module4::Animal>(m, "Duck") \
+#define MODULE2_DERIVED_BINDINGS(m) \
+    py::class_<module2::Duck, module2::Animal>(m, "Duck") \
         .def( py::init<const std::string&, size_t>() ) \
-        .def( "quack", &module4::Duck::quack ) \
-        .def( "nfeathers", &module4::Duck::nfeathers );\
-    py::class_<module4::Dog, module4::Animal>(m, "Dog") \
+        .def( "quack", &module2::Duck::quack ) \
+        .def( "nfeathers", &module2::Duck::nfeathers );\
+    py::class_<module2::Dog, module2::Animal>(m, "Dog") \
         .def( py::init<const std::string&, size_t>() ) \
-        .def( "bark", &module4::Dog::bark ) \
-        .def( "nfleas", &module4::Dog::nfleas );
+        .def( "bark", &module2::Dog::bark ) \
+        .def( "nfleas", &module2::Dog::nfleas );

@@ -1,7 +1,7 @@
 
 #include <derived.h>
 
-namespace module4
+namespace module2
 {
 
     Duck::Duck( const std::string& name,

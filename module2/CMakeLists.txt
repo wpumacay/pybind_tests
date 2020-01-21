@@ -1,11 +1,8 @@
 
-find_package( OpenGL REQUIRED )
-
-include_directories( ${EXT_INCLUDE_DIRECTORIES} )
+include_directories( "${CMAKE_CURRENT_SOURCE_DIR}/include" )
 
 pybind11_add_module( module2
-                     src/Window.cpp
-                     src/mod2_binding.cpp )
-target_link_libraries( module2 PRIVATE
-                       ${OPENGL_LIBRARIES}
-                       glfw glad )
+                     src/resources.cpp
+                     src/base.cpp
+                     src/derived.cpp
+                     mod2_bindings.cpp )

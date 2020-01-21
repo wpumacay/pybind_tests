@@ -7,20 +7,20 @@
 
 namespace py = pybind11;
 
-PYBIND11_MODULE(module4, m)
+PYBIND11_MODULE(module2, m)
 {
     m.doc() = R"pbdoc(
-        Bindings for sample module 4
+        Bindings for sample module 2
     )pbdoc";
 
     // resources bindings
-    MODULE4_RESOURCES_BINDINGS( m );
+    MODULE2_RESOURCES_BINDINGS( m );
 
     // base-class bindings
-    MODULE4_BASE_BINDINGS( m );
+    MODULE2_BASE_BINDINGS( m );
 
     // derived class bindings
-    MODULE4_DERIVED_BINDINGS( m );
+    MODULE2_DERIVED_BINDINGS( m );
 
     m.attr( "__version__" ) = "dev";
 }

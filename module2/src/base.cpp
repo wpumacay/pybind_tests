@@ -1,7 +1,7 @@
 
 #include <base.h>
 
-namespace module4
+namespace module2
 {
 
     Animal::Animal( const std::string& name )
